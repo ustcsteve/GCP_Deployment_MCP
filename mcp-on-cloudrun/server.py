@@ -69,5 +69,11 @@ async def evaluate_portfolio_risk(holdings: List[Dict[str, Any]]) -> Dict[str, A
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
-    logger.info(f"🚀 FinMarket MCP server started on port {port}")
-    asyncio.run(mcp.run_async(transport="http", host="0.0.0.0", port=port))
+    logger.info(f"🚀 MCP server started on port {port}")
+    asyncio.run(
+        mcp.run_async(
+            transport="http",
+            host="0.0.0.0",
+            port=port,
+        )
+    )
