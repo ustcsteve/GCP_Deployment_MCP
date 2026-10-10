@@ -1,17 +1,22 @@
 import asyncio
 import logging
 import os
+import re
+from pathlib import Path
 from typing import Dict, Any, List
+
+import httpx
+from dotenv import load_dotenv
 from fastmcp import FastMCP
-import httpx  # Using httpx for async API requests
+
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format="[%(levelname)s]: %(message)s", level=logging.INFO)
 
-# Rename the server to match your brand new financial utility
 mcp = FastMCP("FinMarket Intelligence Server 📈")
 
-ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY", "demo")
+ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 
 @mcp.tool()
 async def get_stock_price(ticker: str) -> Dict[str, Any]:
@@ -22,20 +27,32 @@ async def get_stock_price(ticker: str) -> Dict[str, Any]:
     Args:
         ticker: The stock market ticker symbol (e.g., 'AAPL', 'GOOGL', 'TSLA').
     """
-    logger.info(f">>> 🛠 Tool: 'get_stock_price' called for ticker '{ticker}'")
-    
-    url = f"https://alphavantage.co{ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
-    
-    async with httpx.AsyncClient() as client:
+    ticker = ticker.strip().upper()
+    if not re.fullmatch(r"[A-Z0-9.\-]{1,15}", ticker):
+        return {"error": "Provide a valid stock ticker symbol."}
+    if not ALPHA_VANTAGE_API_KEY:
+        return {"error": "The market data API key is not configured."}
+
+    url = "https://www.alphavantage.co/query"
+    params = {
+        "function": "GLOBAL_QUOTE",
+        "symbol": ticker,
+        "apikey": ALPHA_VANTAGE_API_KEY,
+    }
+    logger.info("Fetching market quote for %s", ticker)
+
+    async with httpx.AsyncClient(timeout=15) as client:
         try:
-            response = await client.get(url)
+            response = await client.get(url, params=params)
+            response.raise_for_status()
             data = response.json()
-            
-            # Clean and restructure the raw API data into an LLM-friendly schema
             quote = data.get("Global Quote", {})
             if not quote:
-                return {"error": f"Ticker '{ticker}' not found or API limit reached."}
-                
+                reason = data.get("Note") or data.get("Information")
+                if reason:
+                    return {"error": reason}
+                return {"error": f"No quote returned for ticker '{ticker}'."}
+
             return {
                 "symbol": quote.get("01. symbol"),
                 "current_price": float(quote.get("05. price", 0)),
@@ -45,8 +62,8 @@ async def get_stock_price(ticker: str) -> Dict[str, Any]:
                 "latest_trading_day": quote.get("07. latest trading day"),
                 "change_percent": quote.get("10. change percent")
             }
-        except Exception as e:
-            logger.error(f"Failed to fetch market data: {e}")
+        except Exception:
+            logger.exception("Failed to fetch market data")
             return {"error": "Internal server error fetching real-time data."}
 
 @mcp.tool()
@@ -58,13 +75,26 @@ async def evaluate_portfolio_risk(holdings: List[Dict[str, Any]]) -> Dict[str, A
         holdings: A list of dicts, each containing 'ticker', 'shares', and 'sector'.
                   Example: [{"ticker": "AAPL", "shares": 10, "sector": "Tech"}]
     """
-    logger.info(">>> 🛠 Tool: 'evaluate_portfolio_risk' invoked.")
-    # Implement business logic here to count concentrations, flagging any sector > 50% as "High Concentration"
+    sector_counts: Dict[str, int] = {}
+    for holding in holdings:
+        sector = str(holding.get("sector") or "Unspecified").strip()
+        sector_counts[sector] = sector_counts.get(sector, 0) + 1
+
     total_assets = len(holdings)
+    sector_position_percentages = {
+        sector: round(count / total_assets * 100, 2)
+        for sector, count in sector_counts.items()
+    } if total_assets else {}
+    concentrated_sectors = [
+        sector
+        for sector, percentage in sector_position_percentages.items()
+        if percentage > 50
+    ]
     return {
         "total_tracked_assets": total_assets,
-        "risk_assessment": "Calculated based on live allocations",
-        "status": "Review required if tech concentration exceeds safe baselines."
+        "methodology": "Position-count share by sector; not market-value weighted.",
+        "sector_position_percentages": sector_position_percentages,
+        "high_concentration_sectors": concentrated_sectors,
     }
 
 if __name__ == "__main__":
