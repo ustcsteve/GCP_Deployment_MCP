@@ -1,1 +1,0 @@
-"""FinMarket backend package."""
