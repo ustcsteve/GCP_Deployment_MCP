@@ -36,4 +36,21 @@ gcloud run deploy finmarket-intelligence \
   --set-env-vars "MODEL=gemini-2.5-flash,MCP_SERVER_URL=https://YOUR-MCP-SERVICE.run.app/mcp,GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_LOCATION=us-west1"
 ```
 
+## Google Sign-In
+
+The frontend login uses Google Identity Services. Create a **Web application** OAuth client in Google Auth Platform, set its audience to External, and publish the consent app if any Gmail user should be allowed (Testing mode only permits listed test users). Add the deployed Cloud Run URL and `http://localhost:8080` as authorized JavaScript origins. The API verifies each Google ID token and only accepts verified `@gmail.com` accounts; it does not trust the frontend alone.
+
+Set the public OAuth client ID when deploying the API:
+
+```sh
+gcloud run deploy financial-analytics-service \
+  --source . \
+  --project mcpcloudrun-511200 \
+  --region us-west1 \
+  --service-account finmarket-api@mcpcloudrun-511200.iam.gserviceaccount.com \
+  --update-env-vars GOOGLE_CLIENT_ID=YOUR_WEB_CLIENT_ID
+```
+
+The OAuth client ID is public configuration, not a client secret. The React app only keeps the returned ID token in memory, and the API validates it before creating or continuing an agent session.
+
 Conversation sessions currently use ADK's in-memory session service. They are lost when a Cloud Run instance restarts and are not shared between instances; use a persistent ADK session service before relying on cross-instance conversation continuity.

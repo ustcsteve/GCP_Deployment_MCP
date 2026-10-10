@@ -45,6 +45,22 @@ button { cursor: pointer; }
 .status-dot.online, .live-mark { background: #b5df63; box-shadow: 0 0 0 3px rgba(181,223,99,.12); }
 .status-dot.offline { background: #e28b75; }
 .rail-footnote { margin-top: 8px; color: #87928a; font-size: 11px; }
+.signed-in-user { display: grid; gap: 8px; margin-bottom: 18px; padding-bottom: 17px; border-bottom: 1px solid #344139; }
+.signed-in-user .connection-label { margin: 0; }
+.user-email { color: #e5e9e1; font-size: 11px; overflow-wrap: anywhere; }
+.signout-button { justify-self: start; padding: 0; border: 0; color: #aeb8ae; background: transparent; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
+.signout-button:hover { color: var(--acid); }
+
+.signin-page { min-height: 100vh; display: grid; place-items: center; padding: 28px; background-color: var(--paper); background-image: linear-gradient(135deg, rgba(214,223,198,.22), transparent 48%); }
+.signin-content { width: min(100%, 380px); display: grid; justify-items: start; gap: 20px; animation: rise-in .35s ease-out both; }
+.signin-brand { display: flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+.signin-brand .brand-mark { border-color: #9ca69a; }
+.signin-eyebrow, .signin-footer { color: #828b81; font: 9px var(--mono); }
+.signin-content h1 { margin: 0; color: #1b2521; font-size: 27px; }
+.signin-policy { margin: -12px 0 2px; color: #717b72; font-size: 13px; line-height: 1.6; }
+.signin-pending { min-height: 40px; display: flex; align-items: center; color: #617044; font-size: 13px; }
+.signin-error { max-width: 100%; padding: 11px 13px; border-left: 3px solid #bc705c; color: #763d31; background: #f6e9e4; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.signin-footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--line); }
 
 .main-panel { min-width: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--paper); }
 .topbar { height: 62px; display: flex; align-items: center; justify-content: space-between; padding: 0 42px; border-bottom: 1px solid var(--line); }
