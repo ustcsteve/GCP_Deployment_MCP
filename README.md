@@ -53,4 +53,5 @@ gcloud run deploy financial-analytics-service \
 
 The OAuth client ID is public configuration, not a client secret. The React app only keeps the returned ID token in memory, and the API validates it before creating or continuing an agent session.
 
-Conversation sessions currently use ADK's in-memory session service. They are lost when a Cloud Run instance restarts and are not shared between instances; use a persistent ADK session service before relying on cross-instance conversation continuity.
+Conversation sessions currently use ADK's in-memory session service. They are lost when a Cloud Run instance restarts and are not shared between instances; use a persistent ADK session service before relying on cross-instance conversation continuity.<img width="1699" height="946" alt="Screenshot 2026-10-10 at 7 44 12 PM" src="https://github.com/user-attachments/assets/f3f0f9c3-0fc1-42a0-966f-1c56d3637c1f" />
+<img width="1697" height="946" alt="Screenshot 2026-10-10 at 7 44 39 PM" src="https://github.com/user-attachments/assets/ad585743-1a64-4c81-bdee-fa2ec1f09395" />
