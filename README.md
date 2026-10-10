@@ -2,19 +2,8 @@
 
 I’ll summarize the current workspace rather than relying on earlier layout assumptions. I’ll check the active README, backend entrypoints, MCP implementation, frontend, and root build/dependency files; I’ll avoid repeating any values from `.env`.
 
-Read 
 
-Read 
 
-Read 
-
-Read 
-
-Read 
-
-Read 
-
-Read 
 
 **Architecture**
 ```mermaid
@@ -28,6 +17,9 @@ flowchart LR
   MCP --> Market[Alpha Vantage]
   Agent -. optional background .-> Wiki[Wikipedia]
 ```
+
+
+
 
 The API verifies Google ID tokens server-side, permits verified Gmail accounts, and associates ADK sessions with each user. The agent researches with MCP tools and optional Wikipedia context, then formats a response. Wikipedia failures are handled as optional context so they don’t abort the workflow.
 
