@@ -12,3 +12,8 @@
 /.sudo_as_admin_successful
 /.vscode
 backend/.env
+**/.env
+**/.env.*
+**/.DS_Store
+**/.DS_Store.*
+**/.venv
