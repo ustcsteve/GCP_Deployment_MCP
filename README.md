@@ -1,10 +1,5 @@
 # FinMarket Intelligence
 
-I’ll summarize the current workspace rather than relying on earlier layout assumptions. I’ll check the active README, backend entrypoints, MCP implementation, frontend, and root build/dependency files; I’ll avoid repeating any values from `.env`.
-
-
-
-
 **Architecture**
 ```mermaid
 flowchart LR
