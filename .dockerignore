@@ -6,4 +6,6 @@
 **/*.pyc
 **/node_modules
 frontend/dist
-mcp-on-cloudrun/.venv
+**/.venv
+**/.DS_Store
+**/.DS_Store.*
